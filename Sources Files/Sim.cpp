@@ -57,11 +57,11 @@ void menuSIM(Repository<SIM>& ds){
 	int chon;
 	do{
 		cout << "\n===== SIM =====\n";
-		cout << "1.Them" << endl;
-		cout << "2.Hien thi" << endl;
-		cout << "3.Tim" << endl;
-		cout << "4.Sua" << endl;
-		cout << "5.Xoa" << endl;
+		cout << "1.Them sim" << endl;
+		cout << "2.Hien thi danh sach sim" << endl;
+		cout << "3.Tim sim" << endl;
+		cout << "4.Sua sim" << endl;
+		cout << "5.Xoa sim" << endl;
 		cout << "0.Quay lai" << endl;
 		cout << "Chon: ";
 		if(!(cin >> chon)) {
