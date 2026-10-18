@@ -3,22 +3,31 @@
 
 #include<iostream>
 #include<string>
-#include"Doituong.h"
+#include"Entity.h"
+#include"Repository.h"
 using namespace std;
 
-class SIM : public Doituong{
+class SIM : public Entity{
 	private:
 		string SDT;
 		string NhaMang;
 	public:
 		SIM();
-		void nhap() override;
-		void hienthi() override;
-		string toFile() override;
-		void fromFile(string DuLieu) override;
+		void nhap();
+		void hienThi() override;
+		string toFile();
+		void fromFile(string DuLieu);
+		string getMa(){
+			return ma;
+		}
+		void setMa(string ma){
+			this->ma=ma;
+		}
 		string getSDT();
 		string getNhaMang();
 		void setSDT(string SDT);
 		void setNhaMang(string NhaMang);
 };
+void menuSIM(Repository<SIM>& ds);
+void runSIM();
 #endif
