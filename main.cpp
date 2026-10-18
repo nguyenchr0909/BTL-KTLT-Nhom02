@@ -1,6 +1,8 @@
 #include <iostream>
 #include "ThueBao.h"
 #include "Entity.h"
+#include "Khachhang.h"
+#include "Entity.h"
 
 using namespace std;
 
@@ -13,6 +15,8 @@ int main() {
         cout << "1. Quan ly thue bao\n";
         cout << "2. Quan ly don cuoc\n";
         cout << "3. Nap tien\n";
+        cout << "4. Quan ly khach hang\n";
+        cout << "5. Quan ly sim\n";
         cout << "0. Thoat chuong trinh\n";
         cout << "Nhap lua chon: ";
         cin >> choice;
@@ -33,6 +37,12 @@ int main() {
             case 3:
                 runThueBao();
                 break;
+            case 4:
+            	runKhachHang();
+            	break;
+            case 5:
+            	runSIM();
+            	break;
             case 0:
                 cout << "Ket thuc chuong trinh!\n";
                 break;
