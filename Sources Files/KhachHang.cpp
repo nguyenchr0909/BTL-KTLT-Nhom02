@@ -66,11 +66,11 @@ void menuKhachHang(Repository<KhachHang>& ds){
 	int chon;
 	do{
 		cout << "\n===== KHACH HANG =====\n";
-		cout << "1.Them" << endl;
-		cout << "2.Hien thi" << endl;
-		cout << "3.Tim" << endl;
-		cout << "4.Sua" << endl;
-		cout << "5.Xoa" << endl;
+		cout << "1.Them khach hang" << endl;
+		cout << "2.Hien thi danh sach khach hang" << endl;
+		cout << "3.Tim khach hang" << endl;
+		cout << "4.Sua khach hang" << endl;
+		cout << "5.Xoa khach hang" << endl;
 		cout << "0.Quay lai" << endl;
 		cout << "Chon: ";
 		if(!(cin >> chon)) {
