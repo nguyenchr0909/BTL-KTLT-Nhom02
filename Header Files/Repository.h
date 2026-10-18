@@ -6,6 +6,7 @@
 #include<vector>
 #include<stdexcept>
 #include<iomanip>
+#include<fstream>
 using namespace std;
 
 template <typename T>
@@ -19,7 +20,7 @@ class Repository{
 		void hienthi(){
 			for(int i=0; i<ds.size();i++){
 				cout << right << setw(2) << i+1 << ". ";
-				ds[i].hienthi();
+				ds[i].hienThi();
 			}
 		}
 		int kichthuoc(){
@@ -44,5 +45,33 @@ class Repository{
 			return ds[vitri];
 		}
 };
+template <typename T>
+void docFile(string tenFile, Repository<T>& ds){
+	ifstream file(tenFile);
+	if(!file){
+		ofstream taoFile(tenFile);
+		taoFile.close();
+		return;
+	}
+	string dong;
+	while(getline(file,dong)){
+		if(dong.empty()) continue;
+		try{
+			T x;
+			x.fromFile(dong);
+			if(ds.timMa(x.getMa())==-1) ds.them(x);
+			else cout << "Canh bao: Ma bi trung" << endl;
+		} catch(const char* e){
+			cout << "Canh bao: " << e << endl;
+		}
+	}
+	file.close();
+}
+template<typename T>
+void ghiFile(string tenFile, Repository<T>& ds){
+	ofstream file(tenFile);
+	if(!file) throw "Khong mo duoc file";
+	for(int i=0; i < ds.kichthuoc();i++) file << ds.lay(i).toFile() << endl;
+	file.close();
+}
 #endif
-
