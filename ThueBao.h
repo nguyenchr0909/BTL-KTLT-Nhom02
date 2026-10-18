@@ -8,8 +8,7 @@ using namespace std;
 
 
 void runThueBao();
-void nhaphanmuc();
-
+bool check_int();
 
 class ThueBao: public Entity
 {
@@ -29,16 +28,14 @@ class ThueBao: public Entity
           Han_muc(no), Uu_dai(uudai) {}
 
 
-    //Getter
 
 
-
-    //Setter
-    void nhap() ;
-
-    // Hàm static để in toàn bộ danh sách thuê bao
+    void hienThi() override;
+    void        nhap(const vector<ThueBao>& danhSach);
     static void xuat(const vector<ThueBao>& danhSach);
     static void tim (const vector<ThueBao>& danhSach);
+    static void sua ( vector<ThueBao>& danhSach);
+
 
 
 };
