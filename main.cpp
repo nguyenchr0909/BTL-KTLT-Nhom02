@@ -6,9 +6,7 @@ using namespace std;
 
 
 int main(){
-    NapTien();
-
-    // Nếu muốn chạy Menu Khiếu Nại thì mở dòng dưới ra:
+    NapTien();//gọi thẳng ra 
     KhieuNai();
     return 0;
 }
