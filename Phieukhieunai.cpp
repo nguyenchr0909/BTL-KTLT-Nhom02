@@ -60,7 +60,7 @@ void PhieuKhieuNai :: fromFile(string line){
     getline(ss, NoiDung, ',');
     getline(ss, TrangThai, ',');
 }
-void runKhieuNai() {
+void KhieuNai() {
     vector<PhieuKhieuNai> ds;
     int choice;
 
