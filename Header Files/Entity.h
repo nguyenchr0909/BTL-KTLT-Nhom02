@@ -10,7 +10,8 @@ protected:
     string ma;
 public:
     Entity(const string& code) : ma(code) {}
-    virtual void hienThi() = 0;
+    virtual void display() = 0;
     virtual ~Entity() = default;
 };
+
 #endif
