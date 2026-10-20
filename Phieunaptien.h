@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <string>
-#include "PhieuNapTien.h"
 #include "Entity.h"
 
 using namespace std;
