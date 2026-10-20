@@ -20,7 +20,7 @@ class Repository{
 		void hienthi(){
 			for(int i=0; i<ds.size();i++){
 				cout << right << setw(2) << i+1 << ". ";
-				ds[i].hienThi();
+				ds[i].display();
 			}
 		}
 		int kichthuoc(){
