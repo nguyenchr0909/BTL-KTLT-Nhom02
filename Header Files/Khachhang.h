@@ -14,7 +14,7 @@ class KhachHang : public Entity{
 	public:
 		KhachHang();
 		void nhap();
-		void hienThi() override;
+		void display() override;
 		string toFile();
 		void fromFile(string DuLieu);
 		string getMa(){
