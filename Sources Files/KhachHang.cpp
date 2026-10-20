@@ -33,7 +33,7 @@ void KhachHang :: nhap(){
 	if(ten.empty()) throw("Ten khach hang khong hop le");
 	if(tuoi<0) throw("Tuoi khach hang khong hop le");
 }
-void KhachHang :: hienThi(){
+void KhachHang :: display(){
 	cout << left << setw(10) << ma << setw(25) << ten << setw(10) << tuoi << endl;
 }
 string KhachHang :: toFile(){
@@ -95,14 +95,14 @@ void menuKhachHang(Repository<KhachHang>& ds){
 				cin >> ma;
 				int vitri=ds.timMa(ma);
 				if(vitri==-1) throw "Khong tim thay";
-				ds.lay(vitri).hienThi();
+				ds.lay(vitri).display();
 			} else if(chon==4){
 				string ma, ten, tuoi;
 				cout << "Nhap ma can sua: ";
 				cin >> ma;
 				int vitri=ds.timMa(ma);
 				if(vitri==-1) throw "Khong tim thay";
-				ds.lay(vitri).hienThi();
+				ds.lay(vitri).display();
 				cin.ignore(numeric_limits<streamsize>::max(),'\n');
 				cout << "Ten moi: ";
 				getline(cin,ten);
@@ -124,7 +124,7 @@ void menuKhachHang(Repository<KhachHang>& ds){
 				cin >> ma;
 				int vitri=ds.timMa(ma);
 				if(vitri==-1) throw "Khong tim thay";
-				ds.lay(vitri).hienThi();
+				ds.lay(vitri).display();
 				cout << "Xoa?(Y/N)";
 				cin >> xacnhan;
 				if(xacnhan=='Y' || xacnhan=='y') {
