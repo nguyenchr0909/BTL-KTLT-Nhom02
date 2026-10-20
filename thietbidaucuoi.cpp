@@ -5,462 +5,318 @@
 #include <string>
 #include <iomanip>
 #include <stdexcept>
-#include <algorithm>
 
 using namespace std;
 
-// ==========================================
-// 1. TIEN ICH NHAP LIEU
-// ==========================================
-class InputHelper {
-public:
-    static string getString(const string& prompt) {
-        cout << prompt;
-        string val;
-        getline(cin >> ws, val);
-        return val;
-    }
-
-    static int getInt(const string& prompt) {
-        while (true) {
-            cout << prompt;
-            string input;
-            getline(cin >> ws, input);
-            if (input.empty()) return -1; // Ho tro bo trong khi cap nhat
-            stringstream ss(input);
-            int val;
-            if (ss >> val && ss.eof()) {
-                return val;
-            }
-            cout << "[Loi] Vui long nhap so nguyen hop le!\n";
-        }
-    }
-};
-
-// ==========================================
-// 2. LOP CO SO TRUU TUONG (Entity)
-// ==========================================
 class Entity {
 protected:
-    string id;
-
+    string ma; // Ma dinh danh
 public:
-    Entity(const string& id = "") : id(id) {}
-    virtual ~Entity() {}
-
-    string getId() const { return id; }
-    void setId(const string& newId) {
-        if (newId.empty()) throw invalid_argument("Ma khong duoc de trong!");
-        id = newId;
-    }
-
-    virtual void input(bool isNew = true) = 0;
-    virtual void display() const = 0;
-    virtual string toFileString() const = 0;
-    virtual void fromFileString(const string& line) = 0;
+    string getMa() const { return ma; }
+    
+    // Ham thuan ao
+    virtual void nhapThongTin() = 0; 
+    virtual void hienThi() const = 0;
 };
 
-// ==========================================
-// 3. LOP THUC THE: Device (Thiet bi)
-// ==========================================
-class Device : public Entity {
+class ThietBi : public Entity {
 private:
     string imei;
     string hangSanXuat;
     string model;
     int namSanXuat;
 
-    // Ham kiem tra IMEI (dung 15 chu so)
-    bool isValidIMEI(const string& imeiStr) const {
-        if (imeiStr.length() != 15) return false;
-        for (char c : imeiStr) {
-            if (!isdigit(c)) return false;
+    bool kiemTraIMEI(const string& str) {
+        if (str.length() != 15) return false;
+        for (int i = 0; i < str.length(); i++) {
+            if (str[i] < '0' || str[i] > '9') return false;
         }
         return true;
     }
 
 public:
-    Device() : Entity(""), imei(""), hangSanXuat(""), model(""), namSanXuat(0) {}
-    Device(string id, string imei, string hang, string mod, int nam) 
-        : Entity(id), imei(imei), hangSanXuat(hang), model(mod), namSanXuat(nam) {}
+    ThietBi() {
+        ma = ""; imei = ""; hangSanXuat = ""; model = ""; namSanXuat = 0;
+    }
 
-    // Getters
     string getImei() const { return imei; }
     string getHangSanXuat() const { return hangSanXuat; }
-    string getModel() const { return model; }
-    int getNamSanXuat() const { return namSanXuat; }
 
-    // Setters
-    void setImei(const string& val) {
-        if (!isValidIMEI(val)) throw invalid_argument("IMEI phai chua dung 15 chu so!");
-        imei = val;
-    }
-    void setHangSanXuat(const string& val) {
-        if (val.empty()) throw invalid_argument("Hang san xuat khong duoc rong!");
-        hangSanXuat = val;
-    }
-    void setModel(const string& val) {
-        if (val.empty()) throw invalid_argument("Ten model khong duoc rong!");
-        model = val;
-    }
-    void setNamSanXuat(int val) {
-        if (val < 1900 || val > 2100) throw invalid_argument("Nam san xuat khong hop le (1900-2100)!");
-        namSanXuat = val;
-    }
+    void nhapThongTin() override {
+        cout << "Nhap ma thiet bi (VD: TB01): ";
+        getline(cin >> ws, ma);
 
-    void input(bool isNew = true) {
-        if (isNew) {
-            setId(InputHelper::getString("Nhap Ma thiet bi (VD: TB01): "));
-            
-            while (true) {
-                try {
-                    setImei(InputHelper::getString("Nhap so IMEI (15 chu so): "));
-                    break;
-                } catch (const exception& e) {
-                    cout << "[Loi] " << e.what() << "\n";
-                }
-            }
-            
-            while (true) {
-                try {
-                    setHangSanXuat(InputHelper::getString("Nhap Hang san xuat (Apple, Samsung,...): "));
-                    break;
-                } catch (const exception& e) {
-                    cout << "[Loi] " << e.what() << "\n";
-                }
-            }
+        while (true) {
+            cout << "Nhap so IMEI (15 chu so): ";
+            getline(cin, imei);
+            if (kiemTraIMEI(imei)) break;
+            cout << "Loi: IMEI phai gom dung 15 chu so!\n";
         }
 
-        // Nhap Model (khi cap nhat co the bo trong)
+        cout << "Nhap hang san xuat (Apple, Samsung...): ";
+        getline(cin, hangSanXuat);
+
+        cout << "Nhap ten model: ";
+        getline(cin, model);
+
         while (true) {
-            try {
-                cout << "Nhap Ten model" << (!isNew ? " (bo trong de giu nguyen '" + model + "')" : "") << ": ";
-                string modStr;
-                getline(cin >> ws, modStr);
-                if (!isNew && modStr.empty()) break; // Bo trong -> giu nguyen
-                setModel(modStr);
+            cout << "Nhap nam san xuat (1900-2100): ";
+            string namStr;
+            getline(cin, namStr);
+            stringstream ss(namStr);
+            if (ss >> namSanXuat && namSanXuat >= 1900 && namSanXuat <= 2100) {
                 break;
-            } catch (const exception& e) {
-                cout << "[Loi] " << e.what() << "\n";
             }
-        }
-
-        // Nhap Nam san xuat (khi cap nhat co the bo trong)
-        while (true) {
-            try {
-                cout << "Nhap Nam san xuat" << (!isNew ? " (nhan Enter de giu nguyen '" + to_string(namSanXuat) + "')" : "") << ": ";
-                string namStr;
-                getline(cin, namStr);
-                if (!isNew && namStr.empty()) break; // Bo trong -> giu nguyen
-                
-                stringstream ss(namStr);
-                int nam;
-                if (ss >> nam && ss.eof()) {
-                    setNamSanXuat(nam);
-                    break;
-                } else {
-                     cout << "[Loi] Vui long nhap so nguyen!\n";
-                }
-            } catch (const exception& e) {
-                cout << "[Loi] " << e.what() << "\n";
-            }
+            cout << "Loi: Nam san xuat khong hop le hoac ban da nhap chu!\n";
         }
     }
 
-    void display() const {
-        cout << "| " << setw(8) << left << id 
+    void capNhatThongTin() {
+        cout << "--- Nhap thong tin moi (Nhan Enter de giu nguyen) ---\n";
+        
+        cout << "Nhap ten model (Hien tai: " << model << "): ";
+        string modelMoi;
+        getline(cin, modelMoi);
+        if (!modelMoi.empty()) {
+            model = modelMoi; 
+        }
+
+        while (true) {
+            cout << "Nhap nam san xuat (Hien tai: " << namSanXuat << "): ";
+            string namStr;
+            getline(cin, namStr);
+            if (namStr.empty()) break; 
+
+            stringstream ss(namStr);
+            int namMoi;
+            if (ss >> namMoi && namMoi >= 1900 && namMoi <= 2100) {
+                namSanXuat = namMoi;
+                break;
+            }
+            cout << "Loi: Nam san xuat khong hop le!\n";
+        }
+    }
+
+    void hienThi() const override {
+        cout << "| " << setw(8) << left << ma 
              << "| " << setw(18) << left << imei 
              << "| " << setw(15) << left << hangSanXuat 
              << "| " << setw(20) << left << model 
              << "| " << setw(10) << right << namSanXuat << " |\n";
     }
 
-    string toFileString() const {
+    string taoChuoiLuuFile() const {
         stringstream ss;
-        ss << id << "|" << imei << "|" << hangSanXuat << "|" << model << "|" << namSanXuat;
+        ss << ma << "|" << imei << "|" << hangSanXuat << "|" << model << "|" << namSanXuat;
         return ss.str();
     }
 
-    void fromFileString(const string& line) {
-        stringstream ss(line);
-        string idStr, imeiStr, hangStr, modStr, namStr;
-
-        if (getline(ss, idStr, '|') &&
-            getline(ss, imeiStr, '|') &&
-            getline(ss, hangStr, '|') &&
-            getline(ss, modStr, '|') &&
-            getline(ss, namStr, '|')) {
-            
-            stringstream ssNam(namStr);
-            int nam;
-            ssNam >> nam;
-
-            setId(idStr);
-            setImei(imeiStr);
-            setHangSanXuat(hangStr);
-            setModel(modStr);
-            setNamSanXuat(nam);
-        } else {
-            throw runtime_error("Dong du lieu sai dinh dang!");
-        }
+    void docTuChuoi(string dong) {
+        stringstream ss(dong);
+        string namStr;
+        getline(ss, ma, '|');
+        getline(ss, imei, '|');
+        getline(ss, hangSanXuat, '|');
+        getline(ss, model, '|');
+        getline(ss, namStr, '|');
+        
+        stringstream(namStr) >> namSanXuat; 
     }
 };
 
-// ==========================================
-// 4. LOP KHUON MAU: Repository<T>
-// ==========================================
-template <typename T>
-class Repository {
+class QuanLyThietBi {
 private:
-    vector<T*> items;
-    string filePath;
-
-    void clearMemory() {
-        for (size_t i = 0; i < items.size(); ++i) {
-            delete items[i];
-        }
-        items.clear();
-    }
-
-public:
-    Repository(const string& path) : filePath(path) {}
-    
-    ~Repository() {
-        clearMemory();
-    }
-
-    void loadFromFile() {
-        clearMemory();
-        ifstream file(filePath.c_str());
-        if (!file.is_open()) {
-            ofstream newFile(filePath.c_str());
-            newFile.close();
-            return;
-        }
-
-        string line;
-        while (getline(file, line)) {
-            if (line.empty() || line[0] == '#') continue;
-            try {
-                T* obj = new T();
-                obj->fromFileString(line);
-                items.push_back(obj);
-            } catch (...) {
-                cout << "[Canh bao] Bo qua dong loi: " << line << "\n";
-            }
-        }
-        file.close();
-    }
-
-    void saveToFile() const {
-        ofstream file(filePath.c_str());
-        if (!file.is_open()) {
-            throw runtime_error("Khong the mo file de ghi!");
-        }
-        for (size_t i = 0; i < items.size(); ++i) {
-            file << items[i]->toFileString() << "\n";
-        }
-        file.close();
-    }
-
-    T* findById(const string& id) {
-        for (size_t i = 0; i < items.size(); ++i) {
-            if (items[i]->getId() == id) return items[i];
-        }
-        return NULL;
-    }
-
-    bool add(T* item) {
-        if (findById(item->getId()) != NULL) {
-            cout << "[Loi] Ma dinh danh da ton tai!\n";
-            delete item;
-            return false;
-        }
-        items.push_back(item);
-        saveToFile();
-        return true;
-    }
-
-    bool update(const string& id) {
-        T* item = findById(id);
-        if (!item) {
-            cout << "[Loi] Khong tim thay ma: " << id << "\n";
-            return false;
-        }
-        cout << "\n--- Thong tin hien tai ---\n";
-        item->display();
-        cout << "--- Nhap thong tin moi (bo trong de giu nguyen) ---\n";
-        item->input(false); 
-        saveToFile();
-        return true;
-    }
-
-    bool remove(const string& id) {
-        for (typename vector<T*>::iterator it = items.begin(); it != items.end(); ++it) {
-            if ((*it)->getId() == id) {
-                cout << "\nThong tin thiet bi:\n";
-                (*it)->display();
-                
-                string confirm = InputHelper::getString("Ban co chac muon xoa thiet bi nay? (y/n): ");
-                if (confirm == "y" || confirm == "Y") {
-                    delete *it;
-                    items.erase(it);
-                    saveToFile();
-                    cout << "=> Xoa thanh cong!\n";
-                    return true;
-                } else {
-                    cout << "=> Huy thao tac xoa.\n";
-                    return false;
-                }
-            }
-        }
-        cout << "[Loi] Khong tim thay thiet bi co ma: " << id << "\n";
-        return false;
-    }
-
-    const vector<T*>& getAll() const {
-        return items;
-    }
-};
-
-// ==========================================
-// 5. GIAO DIEN MENU CHO THIET BI
-// ==========================================
-class DeviceMenu {
-private:
-    Repository<Device>& repo;
-
-    void printHeader() const {
-        cout << string(85, '-') << "\n";
+    vector<ThietBi> danhSach;
+    string tenFile = "data/devices.txt";
+    void inTieuDe() {
+        cout << string(82, '-') << "\n";
         cout << "| " << setw(8) << left << "Ma TB" 
              << "| " << setw(18) << left << "So IMEI" 
              << "| " << setw(15) << left << "Hang SX" 
              << "| " << setw(20) << left << "Ten Model" 
              << "| " << setw(10) << right << "Nam SX" << " |\n";
-        cout << string(85, '-') << "\n";
+        cout << string(82, '-') << "\n";
     }
 
 public:
-    DeviceMenu(Repository<Device>& r) : repo(r) {}
+    void docFile() {
+        danhSach.clear();
+        ifstream file(tenFile);
+        if (!file.is_open()) return;
+        
+        string dong;
+        while (getline(file, dong)) {
+            if (dong.empty()) continue;
+            ThietBi tb;
+            tb.docTuChuoi(dong);
+            danhSach.push_back(tb);
+        }
+        file.close();
+    }
 
-    void run() {
-        int choice = -1;
-        while (choice != 0) {
-            cout << "\n============ QUAN LY THIET BI DAU CUOI ============\n";
-            cout << "  1. Them thiet bi moi\n";
-            cout << "  2. Xem danh sach thiet bi\n";
-            cout << "  3. Tim kiem theo IMEI\n";
-            cout << "  4. Loc theo hang san xuat\n";
-            cout << "  5. Cap nhat thiet bi\n";
-            cout << "  6. Xoa thiet bi\n";
-            cout << "  0. Quay lai menu chinh\n";
-            cout << "=====================================================\n";
+    void ghiFile() {
+        ofstream file(tenFile);
+        if (!file.is_open()) {
+            cout << "Loi: Khong mo duoc file. Hay kiem tra da tao thu muc 'data' chua!\n";
+            return;
+        }
+        for (int i = 0; i < danhSach.size(); i++) {
+            file << danhSach[i].taoChuoiLuuFile() << "\n";
+        }
+        file.close();
+    }
+    void themThietBi() {
+        ThietBi tb;
+        tb.nhapThongTin();
+        for (int i = 0; i < danhSach.size(); i++) {
+            if (danhSach[i].getMa() == tb.getMa()) {
+                cout << "Loi: Ma thiet bi da ton tai!\n";
+                return;
+            }
+            if (danhSach[i].getImei() == tb.getImei()) {
+                cout << "Loi: So IMEI nay da ton tai trong he thong!\n";
+                return;
+            }
+        }
+        
+        danhSach.push_back(tb);
+        ghiFile();
+        cout << "=> Them thiet bi moi thanh cong!\n";
+    }
+
+    void xemDanhSach() {
+        if (danhSach.empty()) {
+            cout << "Danh sach thiet bi trong!\n";
+            return;
+        }
+        inTieuDe();
+        for (int i = 0; i < danhSach.size(); i++) {
+            danhSach[i].hienThi();
+        }
+        cout << string(82, '-') << "\n";
+    }
+
+    void timKiemIMEI() {
+        string imeiTim;
+        cout << "Nhap so IMEI can tim: ";
+        getline(cin >> ws, imeiTim);
+        
+        bool thay = false;
+        for (int i = 0; i < danhSach.size(); i++) {
+            if (danhSach[i].getImei() == imeiTim) {
+                if (!thay) inTieuDe(); 
+                danhSach[i].hienThi();
+                thay = true;
+            }
+        }
+        if (!thay) cout << "Khong tim thay thiet bi nao!\n";
+        else cout << string(82, '-') << "\n";
+    }
+
+    void locTheoHang() {
+        string hangTim;
+        cout << "Nhap Hang san xuat can loc: ";
+        getline(cin >> ws, hangTim);
+        
+        bool thay = false;
+        for (int i = 0; i < danhSach.size(); i++) {
+            if (danhSach[i].getHangSanXuat() == hangTim) {
+                if (!thay) inTieuDe();
+                danhSach[i].hienThi();
+                thay = true;
+            }
+        }
+        if (!thay) cout << "Khong co thiet bi nao cua hang nay!\n";
+        else cout << string(82, '-') << "\n";
+    }
+
+    void capNhatThietBi() {
+        string maTim;
+        cout << "Nhap ma thiet bi can cap nhat: ";
+        getline(cin >> ws, maTim);
+        
+        for (int i = 0; i < danhSach.size(); i++) {
+            if (danhSach[i].getMa() == maTim) {
+                cout << "\nThong tin hien tai:\n";
+                inTieuDe();
+                danhSach[i].hienThi();
+                cout << "\n";
+                
+                danhSach[i].capNhatThongTin();
+                ghiFile();
+                cout << "=> Cap nhat thanh cong!\n";
+                return;
+            }
+        }
+        cout << "Khong tim thay ma thiet bi!\n";
+    }
+
+    void xoaThietBi() {
+        string maTim;
+        cout << "Nhap ma thiet bi can xoa: ";
+        getline(cin >> ws, maTim);
+        
+        for (int i = 0; i < danhSach.size(); i++) {
+            if (danhSach[i].getMa() == maTim) {
+                cout << "\nThong tin thiet bi sap xoa:\n";
+                inTieuDe();
+                danhSach[i].hienThi();
+                cout << "\n";
+                cout << "Ban co chac chan muon xoa thiet bi nay? (y/n): ";
+                string xacNhan;
+                getline(cin, xacNhan);
+                
+                if (xacNhan == "y" || xacNhan == "Y") {
+                    danhSach.erase(danhSach.begin() + i);
+                    ghiFile();
+                    cout << "=> Xoa thanh cong!\n";
+                } else {
+                    cout << "=> Da huy thao tac xoa.\n";
+                }
+                return;
+            }
+        }
+        cout << "Khong tim thay thiet bi!\n";
+    }
+
+    void menu() {
+        docFile(); 
+        
+        int chon = -1;
+        while (chon != 0) {
+            cout << "\n============= QUAN LY THIET BI =============\n";
+            cout << "1. Them thiet bi moi\n";
+            cout << "2. Xem danh sach thiet bi\n";
+            cout << "3. Tim kiem theo so IMEI\n";
+            cout << "4. Loc theo Hang san xuat\n";
+            cout << "5. Cap nhat thiet bi\n";
+            cout << "6. Xoa thiet bi\n";
+            cout << "0. Thoat\n";
+            cout << "Chon chuc nang: ";
             
-            cout << "Nhap lua chon: ";
-            string choiceStr;
-            getline(cin >> ws, choiceStr);
-            stringstream ss(choiceStr);
-            if (!(ss >> choice)) {
-                 choice = -1; 
+            cin >> chon;
+            if (cin.fail()) {
+                cin.clear(); 
+                cin.ignore(10000, '\n');
+                chon = -1;
             }
 
-            switch (choice) {
-                case 1: { 
-                    Device* dev = new Device();
-                    
-                    dev->input(true);
-                    
-                    bool imeiExists = false;
-                    const vector<Device*>& list = repo.getAll();
-                    for(size_t i=0; i<list.size(); ++i) {
-                         if(list[i]->getImei() == dev->getImei()) {
-                              imeiExists = true;
-                              break;
-                         }
-                    }
-                    
-                    if(imeiExists) {
-                         cout << "[Loi] So IMEI nay da ton tai trong he thong!\n";
-                         delete dev;
-                    } else {
-                         if (repo.add(dev)) {
-                              cout << "=> Them thiet bi thanh cong!\n";
-                         }
-                    }
-                    break;
-                }
-                case 2: { 
-                    const vector<Device*>& list = repo.getAll();
-                    if (list.empty()) {
-                        cout << "Danh sach thiet bi trong!\n";
-                    } else {
-                        printHeader();
-                        for (size_t i = 0; i < list.size(); ++i) {
-                            list[i]->display();
-                        }
-                        cout << string(85, '-') << "\n";
-                        cout << "Tong so thiet bi: " << list.size() << "\n";
-                    }
-                    break;
-                }
-                case 3: { 
-                    string imei = InputHelper::getString("Nhap so IMEI can tim: ");
-                    bool found = false;
-                    const vector<Device*>& list = repo.getAll();
-                    printHeader();
-                    for (size_t i = 0; i < list.size(); ++i) {
-                        if (list[i]->getImei() == imei) {
-                            list[i]->display();
-                            found = true;
-                        }
-                    }
-                    cout << string(85, '-') << "\n";
-                    if (!found) cout << "Khong tim thay thiet bi co IMEI: " << imei << "\n";
-                    break;
-                }
-                case 4: { 
-                    string hang = InputHelper::getString("Nhap Hang san xuat can loc: ");
-                    bool found = false;
-                    const vector<Device*>& list = repo.getAll();
-                    printHeader();
-                    for (size_t i = 0; i < list.size(); ++i) {
-                        if (list[i]->getHangSanXuat() == hang) {
-                            list[i]->display();
-                            found = true;
-                        }
-                    }
-                    cout << string(85, '-') << "\n";
-                    if (!found) cout << "Khong tim thay thiet bi cua hang: " << hang << "\n";
-                    break;
-                }
-                case 5: { 
-                    string id = InputHelper::getString("Nhap Ma thiet bi can cap nhat: ");
-                    repo.update(id);
-                    break;
-                }
-                case 6: { 
-                    string id = InputHelper::getString("Nhap Ma thiet bi can xoa: ");
-                    repo.remove(id);
-                    break;
-                }
-                case 0:
-                    break;
-                default:
-                    cout << "Lua chon khong hop le, vui long nhap lai!\n";
+            switch (chon) {
+                case 1: themThietBi(); break;
+                case 2: xemDanhSach(); break;
+                case 3: timKiemIMEI(); break;
+                case 4: locTheoHang(); break;
+                case 5: capNhatThietBi(); break;
+                case 6: xoaThietBi(); break;
+                case 0: cout << "Dang thoat...\n"; break;
+                default: cout << "Lua chon khong dung, moi chon lai!\n";
             }
         }
     }
 };
 
-// ==========================================
-// 6. MAIN (Tich hop)
-// ==========================================
 int main() {
-    Repository<Device> repoDevice("data/devices.txt");
-    repoDevice.loadFromFile();
-
-    DeviceMenu menu(repoDevice);
-    menu.run();
-
+    QuanLyThietBi ql;
+    ql.menu();
     return 0;
 }
