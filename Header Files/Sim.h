@@ -14,7 +14,7 @@ class SIM : public Entity{
 	public:
 		SIM();
 		void nhap();
-		void hienThi() override;
+		void display() override;
 		string toFile();
 		void fromFile(string DuLieu);
 		string getMa(){
