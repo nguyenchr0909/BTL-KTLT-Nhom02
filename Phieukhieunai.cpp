@@ -66,12 +66,12 @@ void KhieuNai() {
 
     while (true) {
         cout << "\n=== QUAN LY PHIEU KHIEU NAI ===\n";
-        cout << "1. Them phieu khieu nai (Create)\n";
-        cout << "2. Xem danh sach (Read)\n";
-        cout << "3. Cap nhat trang thai (Update)\n";
-        cout << "4. Xoa phieu khieu nai (Delete)\n";
-        cout << "0. Quay lai Menu chinh\n";
-        cout << "Nhap lua chon: ";
+        cout << "1. Them phieu khieu nai" << endl;
+        cout << "2. Xem danh sach" << endl;
+        cout << "3. Cap nhat trang thai" << endl;
+        cout << "4. Xoa phieu khieu nai" << endl;
+        cout << "0. Quay lai Menu chinh" << endl;
+        cout << "Nhap lua chon: " << endl;
         cin >> choice;
         cin.ignore();
 
@@ -79,7 +79,7 @@ void KhieuNai() {
             PhieuKhieuNai p;
             p.nhap();
             ds.push_back(p);
-            cout << "Them thanh cong" << endl;
+            cout << "Them thanh cong " << endl;
         }
         else if (choice == 2) {
             cout << "Danh sach phieu khieu nai" << endl;
@@ -94,14 +94,14 @@ void KhieuNai() {
             getline(cin, maTim);
             bool timThay = false;
             for (auto &p : ds) {
-                if (p.getma() == maTim) {
-                    string ttMoi;
-                    cout << "Nhap trang thai moi" << endl;
-                    getline(cin, ttMoi);
-                    p.setTrangThai(ttMoi);
-                    cout << "Cap nhat thanh cong" << endl;
-                    timThay = true;
-                    break;
+            if (p.getma() == maTim) {
+                string ttMoi;
+                cout << "Nhap trang thai moi" << endl;
+                getline(cin, ttMoi);
+                p.setTrangThai(ttMoi);
+                cout << "Cap nhat thanh cong" << endl;
+                timThay = true;
+                break;
                 }
             }
             if (!timThay) cout << "Khong tim thay ma phieu" << endl;
@@ -116,20 +116,19 @@ void KhieuNai() {
                 if (it->getTrangThai() == "Dang xu ly") {
                     cout << "Loi: Phieu dang o tien trinh 'Dang xu ly', khong duoc xoa";
             } else {
-                    char xacNhan;
-                    cout << "Xac nhan xoa (y/n)? ";
-                    cin >> xacNhan; cin.ignore();
-                if (xacNhan == 'y' || xacNhan == 'Y') {
+                char xacNhan;
+                cout << "Xac nhan xoa (y/n)? ";
+                cin >> xacNhan; cin.ignore();
+            if (xacNhan == 'y' || xacNhan == 'Y') {
                     ds.erase(it);
                     cout << " Da xoa thanh cong " << endl;
                 }
             }
-                    timThay = true;
-                    break;
+                timThay = true;
+                break;
                 }
             }
             if (!timThay) cout << "Khong tim thay ma phieu" << endl;
-        }
-        else if (choice == 0) break;
+        } else if (choice == 0) {break;}
     }
 }
