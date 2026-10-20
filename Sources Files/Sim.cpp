@@ -27,7 +27,7 @@ void SIM :: nhap(){
 	if(SDT.empty()) throw "SDT khong duoc rong";
 	if(NhaMang.empty()) throw "NhaMang khong duoc rong";
 }
-void SIM :: hienThi(){
+void SIM :: display(){
 	cout << left << setw(10) << ma << setw(15) << SDT << setw(15) << NhaMang << endl;
 }
 string SIM :: toFile(){
@@ -86,14 +86,14 @@ void menuSIM(Repository<SIM>& ds){
 				cin >> ma;
 				int vitri=ds.timMa(ma);
 				if(vitri==-1) throw "Khong tim thay";
-				ds.lay(vitri).hienThi();
+				ds.lay(vitri).display();
 			} else if(chon==4){
 				string ma, SDT, NhaMang;
 				cout << "Nhap ma can sua: ";
 				cin >> ma;
 				int vitri=ds.timMa(ma);
 				if(vitri==-1) throw "Khong tim thay";
-				ds.lay(vitri).hienThi();
+				ds.lay(vitri).display();
 				cin.ignore(numeric_limits<streamsize>::max(),'\n');
 				cout << "SDT moi: ";
 				getline(cin,SDT);
@@ -110,7 +110,7 @@ void menuSIM(Repository<SIM>& ds){
 				cin >> ma;
 				int vitri=ds.timMa(ma);
 				if(vitri==-1) throw "Khong tim thay";
-				ds.lay(vitri).hienThi();
+				ds.lay(vitri).display();
 				cout << "Xoa?(Y/N)";
 				cin >> xacnhan;
 				if(xacnhan=='Y' || xacnhan=='y') {
