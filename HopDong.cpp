@@ -5,8 +5,8 @@
 #include <fstream>
 #include <stdexcept>
 #include <iomanip>
+#include <sstream>
 #include <ctype.h>
-
 
 using namespace std;
 
@@ -17,13 +17,14 @@ void HopDong::display() {
     cout << "  2. Xem danh sach hop dong\n";
     cout << "  3. Tim kiem hop dong\n";
     cout << "  4. Cap nhat thong tin hop dong\n";
-    cout << "  5. Xoa thue bao\n";
+    cout << "  5. Xoa hop dong\n";
     cout << "  0. Quay lai\n";
     cout << "==========================================\n";
     cout << "Nhap lua chon: ";
 }
+
 void runHopDong() {
-    vector<HopDong> danhSach; // Danh sách quản lý các hợp đồng
+    vector<HopDong> danhSach;
     HopDong::docFile(danhSach);
     int choice = -1;
     HopDong x;
@@ -31,7 +32,6 @@ void runHopDong() {
         x.display();
         cin >> choice;
 
-        // Xử lý khi nhập lựa chọn không hợp lệ
         while (cin.fail() || choice < 0 || choice > 5) {
             cin.clear();
             cin.ignore(10000, '\n');
@@ -40,43 +40,35 @@ void runHopDong() {
         }
         cin.ignore();
 
-        // Nếu chọn tạo thuê bao mới
         if (choice == 1) {
             HopDong hd;
-            hd.nhap(danhSach); // Gọi phương thức nhap() qua đối tượng tb
-            danhSach.push_back(hd); // Thêm vào danh sách vector
+            hd.nhap(danhSach);
+            danhSach.push_back(hd);
             cout << "-> Them hop dong thanh cong!\n\n";
             HopDong::luuFile(danhSach);
         }
 
-        // Nếu chọn in danh sách
         if (choice == 2) {
             HopDong::xuat(danhSach);
-
         }
 
-        // Nếu chọn tìm kiếm thuê bao
         if (choice == 3) {
             HopDong::tim(danhSach);
         }
 
-
-        // Nếu chọn sửa/đổi thuê bao
         if (choice == 4) {
             HopDong::sua(danhSach);
             HopDong::luuFile(danhSach);
         }
 
-        //Nếu chọn xóa thuê bao
-
         if (choice == 5) {
             HopDong::xoa(danhSach);
             HopDong::luuFile(danhSach);
         }
-}
+    }
 }
 
-// 1. NHAP DU LIEU THUE BAO
+// 1. NHẬP DỮ LIỆU HỢP ĐỒNG
 void HopDong::nhap(const vector<HopDong>& danhSach) {
     string maMoi;
     while (true) {
@@ -84,20 +76,17 @@ void HopDong::nhap(const vector<HopDong>& danhSach) {
             cout << "Nhap ma hop dong: ";
             getline(cin, maMoi);
 
-            // Nếu rỗng quăng lỗi văng xuống khối catch
             if (maMoi.empty()) {
-                   throw invalid_argument("Ma khong duoc rong!");
-                 }
-                  ma = maMoi;
+                throw invalid_argument("Ma hop dong khong duoc de trong!");
+            }
 
-            // Nếu bị trùng, sẽ bị quăng xuống catch
             for (const HopDong& hd : danhSach) {
-                if (hd.ma == maMoi) {
-                    throw invalid_argument("Loi: Ma thue bao '" + maMoi + "' da ton tai!");
+                if (hd.getMa() == maMoi) {
+                    throw invalid_argument("Loi: Ma hop dong '" + maMoi + "' da ton tai!");
                 }
             }
 
-            // Nếu không có lỗi nào bị throw, thoát khỏi vòng lặp nhập mã
+            setMa(maMoi); // Kiểm soát qua Setter
             break;
         }
         catch (const invalid_argument& e) {
@@ -105,26 +94,17 @@ void HopDong::nhap(const vector<HopDong>& danhSach) {
         }
     }
 
-    string maNew;
+    string maKHInput;
     while (true) {
         try {
             cout << "Nhap ma khach hang: ";
-            getline(cin, maNew);
+            getline(cin, maKHInput);
 
-            // Nếu rỗng quăng lỗi văng xuống khối catch
-            if (maNew.empty()) {
-                   throw invalid_argument("Ma khong duoc rong!");
-                 }
-                  ma = maNew;
-
-            // Nếu bị trùng, sẽ bị quăng xuống catch
-            for (const HopDong& hd : danhSach) {
-                if (hd.maKH == maNew) {
-                    throw invalid_argument("Loi: Ma hop dong '" + maNew + "' da ton tai!");
-                }
+            if (maKHInput.empty()) {
+                throw invalid_argument("Ma khach hang khong duoc de trong!");
             }
 
-            // Nếu không có lỗi nào bị throw, thoát khỏi vòng lặp nhập mã
+            setMaKH(maKHInput); // Kiểm soát qua Setter
             break;
         }
         catch (const invalid_argument& e) {
@@ -132,56 +112,57 @@ void HopDong::nhap(const vector<HopDong>& danhSach) {
         }
     }
 
-
-    while(1)
-    {cout << "Nhap ten thue bao dang ki : ";
-     getline(cin, tenGoi);
-     if(tenGoi.empty())cout<<"Ten thue bao khong duoc de trong !\n"; else break;
+    string tenGoiInput;
+    while (true) {
+        cout << "Nhap ten thue bao dang ki: ";
+        getline(cin, tenGoiInput);
+        if (tenGoiInput.empty()) {
+            cout << "Ten thue bao khong duoc de trong!\n";
+        } else {
+            setTenGoi(tenGoiInput); // Kiểm soát qua Setter
+            break;
+        }
     }
 
-
-
-
+    double moneyInput;
     cout << "Nhap so tien con no (VND): ";
-    cin >> Nocuoc;
-    // Bổ sung kiểm tra khi nhập Hạn mức không phải số
-    while (cin.fail()) {
+    cin >> moneyInput;
+    while (cin.fail() || moneyInput < 0) {
         cin.clear();
         cin.ignore(10000, '\n');
-        cout << " So no phai la so, vui long nhap lai: ";
-        cin >> Nocuoc;
+        cout << "So no phai la so >= 0, vui long nhap lai: ";
+        cin >> moneyInput;
     }
-    cin.ignore(); // Xóa ký tự '\n' còn đệm
-
-
+    setNocuoc(moneyInput); // Kiểm soát qua Setter
+    cin.ignore();
 }
 
-// 2. HAM IN TOAN BO THUE BAO
+// 2. HÀM IN TOÀN BỘ HỢP ĐỒNG
 void HopDong::xuat(const vector<HopDong>& danhSach) {
     if (danhSach.empty()) {
-        cout << "\n-> Danh sach thue bao hien dang rong!\n\n";
+        cout << "\n-> Danh sach hop dong hien dang rong!\n\n";
         return;
     }
 
     cout << "\n-------------------------------------------------------------------------\n";
     cout << "| " << left << setw(12) << "Ma hop dong"
          << "| " << left << setw(18) << "Ma khach hang"
-         << "| " << right << setw(12) << "Ten thue bao" << " | "
-         << left << setw(20) << "Tien no cuoc" << " |\n";
+         << "| " << left << setw(18) << "Ten thue bao" << " | "
+         << left << setw(16) << "Tien no cuoc" << " |\n";
     cout << "-------------------------------------------------------------------------\n";
 
     for (const HopDong& hd : danhSach) {
-        cout << "| " << left << setw(12) << hd.ma
-             << "| " << left << setw(18) << hd.maKH
-             << "| " << right << setw(12) << hd.tenGoi << " | "
-             << left << setw(20) << hd.Nocuoc << " |\n";
+        cout << "| " << left << setw(12) << hd.getMa()
+             << "| " << left << setw(18) << hd.getMaKH()
+             << "| " << left << setw(18) << hd.getTenGoi() << " | "
+             << right << setw(16) << hd.getNocuoc() << " |\n";
     }
 
     cout << "-------------------------------------------------------------------------\n";
     cout << "Tong so hop dong: " << danhSach.size() << "\n\n";
 }
 
-// 3. HAM TIM KIEM THEO MA (ĐÃ SỬA LỖI LOGIC)
+// 3. HÀM TÌM KIẾM THEO MÃ
 void HopDong::tim(const vector<HopDong>& danhSach) {
     if (danhSach.empty()) {
         cout << "\n-> Danh sach hop dong hien dang rong! Khong the tim kiem.\n\n";
@@ -189,39 +170,38 @@ void HopDong::tim(const vector<HopDong>& danhSach) {
     }
 
     string TimKiem;
-    cout << "\nHay nhap ma muon tim kiem: ";
+    cout << "\nHay nhap ma hop dong muon tim kiem: ";
     getline(cin, TimKiem);
 
     bool TimThay = false;
 
     for (const HopDong& hd : danhSach) {
-        if (hd.ma == TimKiem) {
+        if (hd.getMa() == TimKiem) {
             TimThay = true;
 
-            // In bảng khi tìm thấy
-           cout << "\n-------------------------------------------------------------------------\n";
-           cout << "| " << left << setw(12) << "Ma hop dong"
-                << "| " << left << setw(18) << "Ma khach hang"
-                << "| " << right << setw(12) << "Ten thue bao" << " | "
-                << left << setw(20) << "Gia tien" << " |\n";
-           cout << "-------------------------------------------------------------------------\n";
+            cout << "\n-------------------------------------------------------------------------\n";
+            cout << "| " << left << setw(12) << "Ma hop dong"
+                 << "| " << left << setw(18) << "Ma khach hang"
+                 << "| " << left << setw(18) << "Ten thue bao" << " | "
+                 << left << setw(16) << "Tien no cuoc" << " |\n";
+            cout << "-------------------------------------------------------------------------\n";
 
-           cout << "| " << left << setw(12) << hd.ma
-             << "| " << left << setw(18) << hd.maKH
-             << "| " << right << setw(12) << hd.tenGoi << " | "
-             << left << setw(20) << hd.tenGoi << " |\n";
+            cout << "| " << left << setw(12) << hd.getMa()
+                 << "| " << left << setw(18) << hd.getMaKH()
+                 << "| " << left << setw(18) << hd.getTenGoi() << " | "
+                 << right << setw(16) << hd.getNocuoc() << " |\n";
 
             cout << "-------------------------------------------------------------------------\n\n";
-            break; // Tìm thấy thì dừng vòng lặp
+            break;
         }
     }
 
-    if (TimThay==false) {
-        cout << "-> Khong tim thay thue bao co ma: " << TimKiem << "\n\n";
+    if (!TimThay) {
+        cout << "-> Khong tim thay hop dong co ma: " << TimKiem << "\n\n";
     }
 }
 
-// 4. HAM CAP NHAT / SUA THONG TIN THUE BAO
+// 4. HÀM CẬP NHẬT / SỬA THÔNG TIN HỢP ĐỒNG
 void HopDong::sua(vector<HopDong>& danhSach) {
     if (danhSach.empty()) {
         cout << "\n-> Danh sach hop dong hien dang rong! Khong the cap nhat.\n\n";
@@ -232,66 +212,59 @@ void HopDong::sua(vector<HopDong>& danhSach) {
     cout << "\nNhap ma hop dong can sua thong tin: ";
     getline(cin, maTim);
 
-    // Tìm thuê bao theo mã trong danh sách
     HopDong* hdFound = nullptr;
     for (HopDong& hd : danhSach) {
-        if (hd.ma == maTim) { // Sử dụng getMa() nếu ma là private
+        if (hd.getMa() == maTim) {
             hdFound = &hd;
             break;
         }
     }
 
-    // Nếu không tìm thấy
     if (hdFound == nullptr) {
         cout << "-> Khong tim thay hop dong co ma: " << maTim << "\n\n";
         return;
     }
 
-    // Hiển thị thông tin hiện tại
     cout << "(Notice: Nhan Enter neu muon giu nguyen thong tin cu)\n\n";
 
-    // 1. Cập nhật ma khach hang
-
+    // 1. Cập nhật Mã khách hàng
     string inputStr;
-    int    inputInt;
-    cout << "Nhap Ma Khach Hang moi : ";
+    cout << "Nhap Ma Khach Hang moi [" << hdFound->getMaKH() << "]: ";
     getline(cin, inputStr);
     if (!inputStr.empty()) {
-        hdFound->maKH = inputStr;
+        hdFound->setMaKH(inputStr);
     }
 
-
-
-    // 2. Cập nhật tên gói mới
-    cout << "Nhap ten goi moi [" << hdFound->tenGoi << "]: ";
+    // 2. Cập nhật Tên gói / thuê bao
+    cout << "Nhap ten goi/thue bao moi [" << hdFound->getTenGoi() << "]: ";
     getline(cin, inputStr);
     if (!inputStr.empty()) {
-        hdFound->tenGoi = inputStr;
+        hdFound->setTenGoi(inputStr);
     }
 
-    cout << "\n-> Cap nhat thong tin hop dong thanh cong!\n\n";
-
-    // 2. Cập nhật giá mới
-
-    while(1)
-     {  cout << "Nhap tien no cuoc moi(VND) : ";
+    // 3. Cập nhật Tiền nợ cước
+    while (true) {
+        cout << "Nhap tien no cuoc moi(VND) [" << hdFound->getNocuoc() << "]: ";
         getline(cin, inputStr);
+        if (inputStr.empty()) break; // Giữ nguyên giá trị cũ
+
         try {
-            double GiatienMoi = stod(inputStr); // Chuyển chuỗi sang kiểu số double
+            double GiatienMoi = stod(inputStr);
             if (GiatienMoi >= 0) {
-                {hdFound->Nocuoc = GiatienMoi;break;}
+                hdFound->setNocuoc(GiatienMoi);
+                break;
             } else {
-                cout << "-> So tien khong hop le (phai >= 0). Vui long nhap lai so tien.\n";
+                cout << "-> So tien khong hop le (phai >= 0). Vui long nhap lai.\n";
             }
         } catch (...) {
-            cout << "-> Du lieu nhap vao khong phai la so. Vui long nhap lai so tien.\n";
+            cout << "-> Du lieu nhap vao khong phai la so. Vui long nhap lai.\n";
         }
     }
 
-
+    cout << "\n-> Cap nhat thong tin hop dong thanh cong!\n\n";
 }
 
-// 5.HÀM XÓA THUE BAO THEO MA
+// 5. HÀM XÓA HỢP ĐỒNG THEO MÃ
 void HopDong::xoa(vector<HopDong>& danhSach) {
     if (danhSach.empty()) {
         cout << "\n-> Danh sach hop dong hien dang rong, khong the xoa!\n\n";
@@ -303,23 +276,20 @@ void HopDong::xoa(vector<HopDong>& danhSach) {
         cout << "Nhap ma hop dong can xoa (Nhan ENTER de huy): ";
         getline(cin, maXoa);
 
-        // 1. Nếu nhấn Enter (mã rỗng) -> Hủy thao tác xóa
         if (maXoa.empty()) {
             cout << "-> Da huy thao tac xoa hop dong.\n\n";
             return;
         }
 
-        // 2. Tìm mã trong danh sách
         bool timThay = false;
-        for (auto ers = danhSach.begin(); ers != danhSach.end();ers ++) {
-            if (ers->ma == maXoa) {
+        for (auto ers = danhSach.begin(); ers != danhSach.end(); ++ers) {
+            if (ers->getMa() == maXoa) {
                 timThay = true;
 
-                // Xác nhận xóa
                 char xacNhan;
                 cout << "Ban co chac chan muon xoa hop dong '" << maXoa << "'? (Y/N): ";
                 cin >> xacNhan;
-                cin.ignore(); // Xóa ký tự '\n' đệm
+                cin.ignore();
 
                 if (xacNhan == 'Y' || xacNhan == 'y') {
                     danhSach.erase(ers);
@@ -328,50 +298,45 @@ void HopDong::xoa(vector<HopDong>& danhSach) {
                     cout << "-> Da huy thao tac xoa.\n\n";
                 }
 
-                return; // Xóa hoặc hủy xong thì thoát hàm luôn
+                return;
             }
         }
 
-        // 3. Nếu không tìm thấy mã -> Báo lỗi và vòng lặp while sẽ bắt nhập lại
         if (!timThay) {
             cout << "-> Loi: Ma hop dong '" << maXoa << "' khong ton tai trong danh sach! Vui long nhap lai.\n\n";
         }
     }
 }
 
-          // Hàm lưu file
-
+// HÀM LƯU FILE
 void HopDong::luuFile(const vector<HopDong>& danhSach) {
     fstream fs;
-    // Mở file
-    fs.open("data\\HopDong.txt");
-    //Kiểm tra file có lỗi khi mở không
+    fs.open("data\\Hopdong.txt", ios::out);
     if (!fs.is_open()) {
-        cout << "-> Canh bao: Khong the mo file de ghi du lieu! (Kiểm tra thu muc 'data')\n";
-        return ;
+        cout << "-> Canh bao: Khong the mo file de ghi du lieu! (Kiem tra thu muc 'data')\n";
+        return;
     }
 
     fs << "# MaHopDong|MaKhachHang|TenThueBao|GiaNoCuoc\n";
 
     for (const HopDong& hd : danhSach) {
-             fs << hd.ma << "|"
-                << hd.maKH << "|"
-                << hd.tenGoi << "|"
-                << hd.Nocuoc << "\n";
+        fs << hd.getMa() << "|"
+           << hd.getMaKH() << "|"
+           << hd.getTenGoi() << "|"
+           << hd.getNocuoc() << "\n";
     }
 
     fs.close();
 }
 
-// Hàm đọc file
+// HÀM ĐỌC FILE
 void HopDong::docFile(vector<HopDong>& danhSach) {
     fstream fs;
     fs.open("data\\Hopdong.txt", ios::in);
 
-    // Nếu file chưa tồn tại thì tạo file rỗng
     if (!fs.is_open()) {
-        ofstream fs("data\\HopDong.txt");
-        fs.close();
+        ofstream newFs("data\\Hopdong.txt");
+        newFs.close();
         return;
     }
 
@@ -392,23 +357,21 @@ void HopDong::docFile(vector<HopDong>& danhSach) {
 
             try {
                 size_t pos;
-                double  Nocuoc= stod(giastr, &pos);
+                double Nocuoc = stod(giastr, &pos);
 
-                if (ma.empty()||Nocuoc <0||TB.empty()||KH.empty()||giastr.empty()||pos!=giastr.length())
-                    {cout << "\nDu lieu: " << line <<" khong hop le\n";continue;}
+                if (ma.empty() || Nocuoc < 0 || TB.empty() || KH.empty() || giastr.empty() || pos != giastr.length()) {
+                    cout << "\nDu lieu: " << line << " khong hop le\n";
+                    continue;
+                }
 
-                danhSach.push_back(
-                    HopDong(ma, KH, TB, Nocuoc)
-                );
+                danhSach.push_back(HopDong(ma, KH, TB, Nocuoc));
             }
             catch (...) {
-                cout << "\nDu lieu: " << line <<" khong hop le\n";
+                cout << "\nDu lieu: " << line << " khong hop le\n";
             }
         }
-       else cout << "\nDu lieu: " << line <<" khong hop le\n";
-}
-
+        else cout << "\nDu lieu: " << line << " khong hop le\n";
+    }
 
     fs.close();
 }
-
