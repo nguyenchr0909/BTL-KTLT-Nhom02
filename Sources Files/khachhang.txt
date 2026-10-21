@@ -1,0 +1,10 @@
+KH01|Nguyen Van An|20
+KH02|Tran Thi Binh|21
+KH03|Le Van Cuong|22
+KH04|Pham Thi Dung|20
+KH05|Hoang Van Em|23
+KH06|Do Thi Hoa|21
+KH07|Bui Van Hung|24
+KH08|Vu Thi Lan|22
+KH09|Dang Van Minh|20
+KH10|Ngo Thi Nga|23
