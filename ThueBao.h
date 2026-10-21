@@ -4,11 +4,12 @@
 #include "Entity.h"
 #include <string>
 #include <vector>
+#include <fstream>
 using namespace std;
 
 
 void runThueBao();
-bool check_int();
+bool check_int(string s);
 
 class ThueBao: public Entity
 {
@@ -20,6 +21,8 @@ class ThueBao: public Entity
 
   public:
 
+
+    //Hàm
     ThueBao() : Entity(""), Loai_Thue_Bao(""),
                 Han_muc(0), Uu_dai("") {}
 
@@ -28,16 +31,19 @@ class ThueBao: public Entity
           Han_muc(no), Uu_dai(uudai) {}
 
 
-
+    // Các hàm thực hiện với dữ liệu
 
     void hienThi() override;
     void        nhap(const vector<ThueBao>& danhSach);
     static void xuat(const vector<ThueBao>& danhSach);
     static void tim (const vector<ThueBao>& danhSach);
-    static void sua ( vector<ThueBao>& danhSach);
+    static void sua (vector<ThueBao>& danhSach);
+    static void xoa (vector<ThueBao>& danhSach);
 
+    // Các hàm thao tác với file
 
-
+    static void docFile(vector<ThueBao>& danhSach);
+    static void luuFile(const vector<ThueBao>& danhSach);
 };
 
 #endif

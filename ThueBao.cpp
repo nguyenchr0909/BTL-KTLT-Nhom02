@@ -5,8 +5,10 @@
 #include <fstream>
 #include <stdexcept>
 #include <iomanip>
-using namespace std;
+#include <ctype.h>
 
+
+using namespace std;
 
 void ThueBao::hienThi() {
     cout << "============ QUAN LY THUE BAO ============\n";
@@ -21,6 +23,7 @@ void ThueBao::hienThi() {
 }
 void runThueBao() {
     vector<ThueBao> danhSach; // Danh sách quản lý các thuê bao
+    ThueBao::docFile(danhSach);
     int choice = -1;
     ThueBao x;
     while (choice != 0) {
@@ -42,11 +45,13 @@ void runThueBao() {
             tb.nhap(danhSach); // Gọi phương thức nhap() qua đối tượng tb
             danhSach.push_back(tb); // Thêm vào danh sách vector
             cout << "-> Them thue bao thanh cong!\n\n";
+            ThueBao::luuFile(danhSach);
         }
 
         // Nếu chọn in danh sách
         if (choice == 2) {
             ThueBao::xuat(danhSach);
+
         }
 
         // Nếu chọn tìm kiếm thuê bao
@@ -55,15 +60,18 @@ void runThueBao() {
         }
 
 
-        // Nếu chọn sua/doi thuê bao
+        // Nếu chọn sửa/đổi thuê bao
         if (choice == 4) {
             ThueBao::sua(danhSach);
-
-
+            ThueBao::luuFile(danhSach);
         }
 
-        //Nếu chọn chinh sau thue bao
-
+        //Nếu chọn xóa thuê bao
+        // Nếu chọn sua/doi thuê bao
+        if (choice == 5) {
+            ThueBao::xoa(danhSach);
+            ThueBao::luuFile(danhSach);
+        }
 }
 }
 
@@ -72,10 +80,10 @@ void ThueBao::nhap(const vector<ThueBao>& danhSach) {
     string maMoi;
     while (true) {
         try {
-            cout << "Nhap ma thue bao: ";
+            cout << "Nhap ma thue bao(LH01): ";
             getline(cin, maMoi);
 
-            // Nếu rỗng, setMa sẽ quăng lỗi văng xuống khối catch
+            // Nếu rỗng quăng lỗi văng xuống khối catch
             if (maMoi.empty()) {
                    throw invalid_argument("Ma khong duoc rong!");
                  }
@@ -96,10 +104,10 @@ void ThueBao::nhap(const vector<ThueBao>& danhSach) {
         }
     }
 
-    cout << "Nhap Loai Thue Bao: ";
+    cout << "Nhap Loai Thue Bao(Tra truoc/Tra sau): ";
     getline(cin, Loai_Thue_Bao);
 
-    cout << "Nhap Han muc: ";
+    cout << "Nhap Han muc(VND): ";
     cin >> Han_muc;
     // Bổ sung kiểm tra khi nhập Hạn mức không phải số
     while (cin.fail()) {
@@ -110,7 +118,7 @@ void ThueBao::nhap(const vector<ThueBao>& danhSach) {
     }
     cin.ignore(); // Xóa ký tự '\n' còn đệm
 
-    cout << "Nhap uu dai: ";
+    cout << "Nhap uu dai(Khong co thi ghi'Khong'): ";
     getline(cin, Uu_dai);
 }
 
@@ -192,7 +200,7 @@ void ThueBao::sua(vector<ThueBao>& danhSach) {
 
     // Tìm thuê bao theo mã trong danh sách
     ThueBao* tbFound = nullptr;
-    for (auto& tb : danhSach) {
+    for (ThueBao& tb : danhSach) {
         if (tb.ma == maTim) { // Sử dụng getMa() nếu ma là private
             tbFound = &tb;
             break;
@@ -206,35 +214,31 @@ void ThueBao::sua(vector<ThueBao>& danhSach) {
     }
 
     // Hiển thị thông tin hiện tại
-    cout << "\n--- THONG TIN HIEN TAI ---";
-    cout << "\nMa thue bao: " << tbFound->ma;
-    cout << "\nLoai thue bao: " << tbFound->Loai_Thue_Bao;
-    cout << "\nHan muc: " << tbFound->Han_muc;
-    cout << "\nUu dai: " << tbFound->Uu_dai << "\n";
-    cout << "---------------------------\n";
     cout << "(Notice: Nhan Enter neu muon giu nguyen thong tin cu)\n\n";
 
     // 1. Cập nhật Loại thuê bao
     string inputStr;
-    cout << "Nhap Loai thue bao moi [" << tbFound->Loai_Thue_Bao << "]: ";
+    int    inputInt;
+    cout << "Nhap Loai thue bao moi : ";
     getline(cin, inputStr);
     if (!inputStr.empty()) {
         tbFound->Loai_Thue_Bao = inputStr;
     }
 
     // 2. Cập nhật Hạn mức
-    cout << "Nhap Han muc moi [" << tbFound->Han_muc << "]: ";
-    getline(cin, inputStr);
-    if (!inputStr.empty()) {
+
+    while(1)
+     {  cout << "Nhap Han muc moi : ";
+        getline(cin, inputStr);
         try {
             double hanMucMoi = stod(inputStr); // Chuyển chuỗi sang kiểu số double
             if (hanMucMoi >= 0) {
-                tbFound->Han_muc = hanMucMoi;
+                {tbFound->Han_muc = hanMucMoi;break;}
             } else {
-                cout << "-> Han muc khong hop le (phai >= 0). Giu nguyen han muc cu.\n";
+                cout << "-> Han muc khong hop le (phai >= 0). Vui long nhap lai han muc.\n";
             }
         } catch (...) {
-            cout << "-> Du lieu nhap vao khong phai la so. Giu nguyen han muc cu.\n";
+            cout << "-> Du lieu nhap vao khong phai la so. Vui long nhap lai han muc.\n";
         }
     }
 
@@ -246,4 +250,128 @@ void ThueBao::sua(vector<ThueBao>& danhSach) {
     }
 
     cout << "\n-> Cap nhat thong tin thue bao thành cong!\n\n";
+}
+
+// 5.HÀM XÓA THUE BAO THEO MA
+void ThueBao::xoa(vector<ThueBao>& danhSach) {
+    if (danhSach.empty()) {
+        cout << "\n-> Danh sach hien dang rong, khong the xoa!\n\n";
+        return;
+    }
+
+    string maXoa;
+    while (true) {
+        cout << "Nhap ma thue bao can xoa (Nhan ENTER de huy): ";
+        getline(cin, maXoa);
+
+        // 1. Nếu nhấn Enter (mã rỗng) -> Hủy thao tác xóa
+        if (maXoa.empty()) {
+            cout << "-> Da huy thao tac xoa thue bao.\n\n";
+            return;
+        }
+
+        // 2. Tìm mã trong danh sách
+        bool timThay = false;
+        for (auto ers = danhSach.begin(); ers != danhSach.end(); ++ers) {
+            if (ers->ma == maXoa) {
+                timThay = true;
+
+                // Xác nhận xóa
+                char xacNhan;
+                cout << "Ban co chac chan muon xoa thue bao '" << maXoa << "'? (Y/N): ";
+                cin >> xacNhan;
+                cin.ignore(); // Xóa ký tự '\n' đệm
+
+                if (xacNhan == 'Y' || xacNhan == 'y') {
+                    danhSach.erase(ers);
+                    cout << "-> Xoa thue bao thanh cong!\n\n";
+                } else {
+                    cout << "-> Da huy thao tac xoa.\n\n";
+                }
+
+                return; // Xóa hoặc hủy xong thì thoát hàm luôn
+            }
+        }
+
+        // 3. Nếu không tìm thấy mã -> Báo lỗi và vòng lặp while sẽ bắt nhập lại
+        if (!timThay) {
+            cout << "-> Loi: Ma thue bao '" << maXoa << "' khong ton tai trong danh sach! Vui long nhap lai.\n\n";
+        }
+    }
+}
+
+          // Hàm lưu file
+
+void ThueBao::luuFile(const vector<ThueBao>& danhSach) {
+    fstream fs;
+    // Mở file
+    fs.open("data\\Thuebao.txt");
+    //Kiểm tra file có lỗi khi mở không
+    if (!fs.is_open()) {
+        cout << "-> Canh bao: Khong the mo file de ghi du lieu! (Kiểm tra thu muc 'data')\n";
+        return ;
+    }
+
+    fs << "# MaThueBao|LoaiThueBao|HanMuc|UuDai\n";
+
+    for (const ThueBao& tb : danhSach) {
+        fs << tb.ma << "|"
+                << tb.Loai_Thue_Bao << "|"
+                << tb.Han_muc << "|"
+                << tb.Uu_dai << "\n";
+    }
+
+    fs.close();
+}
+
+// Hàm đọc file
+
+void ThueBao::docFile(vector<ThueBao>& danhSach) {
+    fstream fs;
+    fs.open("data\\Thuebao.txt", ios::in);
+
+    // Nếu file chưa tồn tại thì tạo file rỗng
+    if (!fs.is_open()) {
+        ofstream fs("data\\Thuebao.txt");
+        fs.close();
+        return;
+    }
+
+    danhSach.clear();
+
+    int Dong=1;
+    string line;
+    while (getline(fs, line)) {
+        Dong++;
+        if (line.empty() || line[0] == '#')
+            continue;
+
+        stringstream ss(line);
+        string ma, loai, hanMucStr, uuDai;
+
+        if (getline(ss, ma, '|') &&
+            getline(ss, loai, '|') &&
+            getline(ss, hanMucStr, '|') &&
+            getline(ss, uuDai)) {
+
+            try {
+                size_t pos;
+                double hanMuc = stod(hanMucStr, &pos);
+
+                if (ma.empty()||hanMuc <0||loai.empty()||hanMucStr.empty()||uuDai.empty()||pos!=hanMucStr.length())
+                    {cout << "Du lieu: " << line <<" khong hop le\n";continue;}
+
+                danhSach.push_back(
+                    ThueBao(ma, loai, hanMuc, uuDai)
+                );
+            }
+            catch (...) {
+                cout << "Du lieu: " << line <<" khong hop le\n";
+            }
+        }
+       else cout << "Du lieu: " << line <<" khong hop le\n";
+}
+
+
+    fs.close();
 }
