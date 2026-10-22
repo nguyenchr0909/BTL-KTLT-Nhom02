@@ -54,7 +54,7 @@ void PhieuNapTien :: nhap(){
 }
 }
 
-    void PhieuNapTien :: display() {// override để kiểm tra m ghi đè cái hiển thị có bị sai ko
+ void PhieuNapTien :: display() {
         cout << " Xac nhan " << ma << " SDT " << SoThueBao << " Gia tien " << endl;
 
 }
@@ -160,8 +160,8 @@ void NapTien() {
                     timThay = true;
                     break;
                 }
-                if (timThay) {GhiFileNapTien(ds);}
             }
+            if (timThay) {GhiFileNapTien(ds);}
             if (!timThay) cout << "Khong tim thay ma phieu" << endl;
         }
         else if (choice == 0) break;
