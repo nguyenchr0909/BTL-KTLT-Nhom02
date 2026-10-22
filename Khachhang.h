@@ -1,4 +1,8 @@
-
+/*
+Ma use case: CS_03
+Ho va ten: Nguyen Dang Toan
+MSV B24DCVT353
+*/
 #ifndef KHACHHANG_H
 #define KHACHHANG_H
 #include<iostream>

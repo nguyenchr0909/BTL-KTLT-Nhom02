@@ -1,3 +1,8 @@
+/*
+Ma use case: CS_04
+Ho va ten: Nguyen Dang Toan
+MSV B24DCVT353
+*/
 #ifndef SIM_H
 #define SIM_H
 

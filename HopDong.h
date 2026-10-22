@@ -1,3 +1,8 @@
+/*
+Ma use case: CS_06
+Ho va ten: Tran Vu Nguyen
+MSV B24DCVT283
+*/
 #ifndef HopDong_H
 #define HopDong_H
 

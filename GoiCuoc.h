@@ -1,3 +1,8 @@
+/*
+Ma use case: CS_01
+Ho va ten: Hoang Tuan
+MSV B24DCVT375
+*/
 #ifndef GOICUOC_H
 #define GOICUOC_H
 

@@ -1,6 +1,7 @@
 #include"PhieuNapTien.h"
 #include <sstream>
 #include <vector>
+#include <fstream> // cái này là thư viện để đọc và ghi file
 
 
 
@@ -67,8 +68,33 @@ void PhieuNapTien :: fromFile(string line){
         MenhGia = stoll(MenhGiaTamThoi);// nêu mệnh giá tậm thời có ký tự thì sẽ gán cái mẹnh giá bừng mẹnh giá tam thời vad stoll là string to ll chuyển chuỗi chữ thành chuỗi số
     }
 }
+void GhiFileNapTien (vector<PhieuNapTien>& ds){
+    ofstream fileOut("Phieunaptien.txt", ios::out);
+    if (fileOut.is_open()) {
+        for (auto& p : ds) {
+            fileOut << p.toFile() << endl;
+        }
+        fileOut.close();
+    } else {
+        cout << "Loi: Khong the tao hoac mo file Phieunaptien.txt" << endl;
+    }
+}
+  void docFileNapTien(vector<PhieuNapTien>& ds) {
+    ifstream fileIn("Phieunaptien.txt");
+    if (fileIn.is_open()) {
+        string line;
+        while (getline(fileIn, line)) {
+            PhieuNapTien p;
+            p.fromFile(line);
+            ds.push_back(p);
+        }
+        fileIn.close();
+    }
+}
+
 void NapTien() {
     vector<PhieuNapTien> ds;
+    docFileNapTien(ds);// dùng để vừa vào chương trình sẽ gọi dữ liệu cũ vào cái đọc file
     int choice;
     while (true) {
         cout << "\n=== QUAN LY PHIEU NAP TIEN ===\n";
@@ -84,6 +110,7 @@ void NapTien() {
         PhieuNapTien p;
         p.nhap();
         ds.push_back(p);
+        GhiFileNapTien(ds);// thêm xong phải ghi lại file luôn
         cout << "Them thanh cong =))" << endl;
     }else if (choice == 2 ){
         cout << "Danh sach nap tien " << endl;
@@ -106,6 +133,7 @@ void NapTien() {
                     timThay = true;
                     break;
                 }
+            if (timThay) {GhiFileNapTien(ds);}
             }
             if (!timThay){
             cout << "Khong tim thay ma phieu"  << endl;}
@@ -126,6 +154,7 @@ void NapTien() {
                     timThay = true;
                     break;
                 }
+                if (timThay) {GhiFileNapTien(ds);}
             }
             if (!timThay) cout << "Khong tim thay ma phieu" << endl;
         }

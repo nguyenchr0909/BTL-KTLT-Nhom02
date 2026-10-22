@@ -1,6 +1,6 @@
 #include "BanGhiCuocGoi.h"
 
-const string DATA_FILE_BANGHI = "data/cdrs.txt";
+const string DATA_FILE_BANGHI = "data/cdr.txt";
 
 // ==================== KHỞI TẠO VÀ METHOD CỦA BANGHICUOCGOI ====================
 

@@ -1,0 +1,13 @@
+# MaThueBao|LoaiThueBao|HanMuc|UuDai
+TB001|Tra truoc|50000|Giam 10%
+TB002|Tra sau|abc|Giam 5%
+TB003|Tra truoc||Giam 20%
+TB004|Tra sau|50000@|Giam 10%
+|Tra truoc|30000|Giam 5%
+TB006||40000|Giam 15%
+TB007|Tra sau|50000|
+TB008|Tra truoc|-10000|Giam 5%
+TB009|Tra sau|@#$|Giam 10%
+TB010|Tra truoc|999999999999999999999999999|Giam 5%
+TB011|Tra sau|50000|Giam 10%
+TB012|Tra truoc|50.5abc|Giam 5%

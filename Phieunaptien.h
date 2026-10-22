@@ -1,3 +1,8 @@
+/*
+Ma use case: CS_07
+Ho va ten: Pham Nguyen Thanh Binh
+MSV B24DCVT038
+*/
 #ifndef PHIEUNAPTIEN_H
 #define PHIEUNAPTIEN_H
 

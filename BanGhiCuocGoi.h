@@ -1,3 +1,8 @@
+/*
+Ma use case: CS_08
+Ho va ten Hoang Tuan
+MSV B24DCVT375
+*/
 #ifndef CDR_H
 #define CDR_H
 

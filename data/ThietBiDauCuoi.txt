@@ -1,0 +1,10 @@
+001|Phone|Moi|100000
+002|router|moi|150
+003|modem|cu|30000
+004|router|cho thue|60000
+005|phone|moi|90000
+006|router|moi|60500
+007|modem|thue|150000
+008|tv box|moi|600000
+009|modem|cu|154000
+010|phone|moi|168000

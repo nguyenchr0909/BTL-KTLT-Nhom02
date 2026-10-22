@@ -289,7 +289,7 @@ void deletePackage() {
 void runGoiCuoc() {
     int choice;
     do {
-        cout << "\n===== QUAN LY GOI CUOC (OOP) =====\n";
+        cout << "\n===== QUAN LY GOI CUOC =====\n";
         cout << "1. Them moi goi cuoc (Create)\n";
         cout << "2. Xem va tim kiem goi cuoc (Read)\n";
         cout << "3. Cap nhat goi cuoc (Update)\n";

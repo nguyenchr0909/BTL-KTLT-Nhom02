@@ -1,3 +1,8 @@
+/*
+Ma use case: CS_05
+Ho va ten: Nguyen Van Hai
+MSV B24DCVT122
+*/
 #ifndef THIETBIDAUCUOI_H
 #define THIETBIDAUCUOI_H
 
