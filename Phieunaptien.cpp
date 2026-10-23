@@ -31,14 +31,8 @@ void PhieuNapTien :: nhap(){
         while (true){
         cout << " Moi quy khach nhap menh gia " << endl;
         cin >> MenhGia;
-        if (cin.fail()) { // Nếu cin bị lỗi (do người dùng nhập chữ vào biến số)
-                cin.clear();
-                cin.ignore(32767, '\n'); // xóa 32767 kí tự đi dừng lại khi gặp enter 32767 là giá trị lớn  nhất cuae 1 số nguyên 16 bit
-                cout << " Loi: Vui long nhap SO, khong nhap CHU!" << endl;
-                continue; 
-            }
         cin.ignore();// dùng cái này để bỏ cái enter mà thằng get line lấy nhập số tiền là nó tự ấy luôn
-            if (MenhGia > 0 && MenhGia % 10000 != 0){
+            if (MenhGia % 10000 != 0){
                     cout << " Menh gia nap phai la boi so cua 10000 " << endl;
             }else{break;}
         }
@@ -54,7 +48,7 @@ void PhieuNapTien :: nhap(){
 }
 }
 
- void PhieuNapTien :: display() {
+    void PhieuNapTien :: display() {// override để kiểm tra m ghi đè cái hiển thị có bị sai ko
         cout << " Xac nhan " << ma << " SDT " << SoThueBao << " Gia tien " << endl;
 
 }
@@ -139,8 +133,8 @@ void NapTien() {
                     timThay = true;
                     break;
                 }
-             }
             if (timThay) {GhiFileNapTien(ds);}
+            }
             if (!timThay){
             cout << "Khong tim thay ma phieu"  << endl;}
         } else if (choice == 4){
@@ -160,8 +154,8 @@ void NapTien() {
                     timThay = true;
                     break;
                 }
+                if (timThay) {GhiFileNapTien(ds);}
             }
-            if (timThay) {GhiFileNapTien(ds);}
             if (!timThay) cout << "Khong tim thay ma phieu" << endl;
         }
         else if (choice == 0) break;
