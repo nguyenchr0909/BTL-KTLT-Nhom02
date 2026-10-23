@@ -129,8 +129,8 @@ void KhieuNai() {
                     timThay = true;
                     break;
                 }
-                if (timThay) ghiFileKhieuNai(ds);
             }
+             if (timThay) {ghiFileKhieuNai(ds);}
             if (!timThay) cout << "Khong tim thay ma phieu" << endl;
         }
         else if (choice == 4) {
